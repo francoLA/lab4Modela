@@ -24,18 +24,18 @@ public class Poblacion{
   }
   
   void agregarPersona(){
-    if(random(0,1) <= PE){
-      personas.add(new  Enfermo());
-    }
-    else{
-      personas.add(new  Sano());
-    }
+    personas.add(new  Individuo());
   }
   
   void run(){
     for(int i = 0; i < cantidadPersonas; i++){
       agregarPersona();
-      Individuo ind = personas.get(i);
+      if(random(0,1) <= PE){
+        Enfermo ind = personas.get(i);
+      }
+      else{
+        Sano ind = personas.get(i);
+      }
       ind.run();
     }
   }
@@ -45,6 +45,7 @@ public class Individuo{
   PVector posicion;
   PVector velocidad;
   PVector aceleracion;
+  //Boolean enfermo;
   
   
   
@@ -52,12 +53,6 @@ public class Individuo{
     aceleracion = new PVector(0, 0);
     velocidad = new PVector(random(velocidadMin, velocidadMax), random(velocidadMin, velocidadMax));
     posicion = new PVector(random(0, 1023), random(0, 1023));
-  }
-  void display(){};
-  
-  void run(){
-   update();
-   display();
   }
   
   void movimientoRandomGauss(){
@@ -68,9 +63,9 @@ public class Individuo{
   }
   
   //s es el largo del paso
-  void movimientoAlternativo(Integer s, float[] theta){
-    float nuevaX = posicion.x + s*cos(random(theta[0],theta[1]));
-    float nuevaY = posicion.y + s*sin(random(theta[0],theta[1]));
+  void movimientoAlternativo(Integer s, float[] random){
+    float nuevaX = posicion.x + s*cos(random(random[0],random[1]));
+    float nuevaY = posicion.y + s*sin(random(random[0],random[1]));
     posicion.x = nuevaX;
     posicion.y = nuevaY;
   }
@@ -96,17 +91,27 @@ public class Individuo{
 }
 
 public class Enfermo extends Individuo{
-  void display(){
-    stroke(#ff0000);
-    fill(#ff0000);
-    ellipse(posicion.x, posicion.y, 8, 8);
-  }
+   void display() {
+     //Enfermos de color rojo
+     stroke(#ff0000);
+     fill(#ff0000);
+      ellipse(posicion.x, posicion.y, 8, 8);
+    }
+    void run(){
+     update();
+     display();
+    }
 }
 
 public class Sano extends Individuo{
-  void display(){
-    stroke(#00ff00);
-    fill(#00ff00);
-    ellipse(posicion.x, posicion.y, 8, 8);
-  }
+  void display() {
+     //Enfermos de color rojo
+     stroke(#00ff00);
+     fill(#00ff00);
+     ellipse(posicion.x, posicion.y, 8, 8);
+    }
+    void run(){
+     update();
+     display();
+    }
 }

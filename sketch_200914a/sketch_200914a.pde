@@ -64,12 +64,22 @@ public class Individuo{
     float nuevaY = posicion.y + (randomGaussian() * 1.5);
     posicion.x = nuevaX;
     posicion.y = nuevaY;
-    
+  }
+  
+  //s es el largo del paso
+  void movimientoAlternativo(Integer s, float[] random){
+    float nuevaX = posicion.x + s*cos(random(random[0],random[1]));
+    float nuevaY = posicion.y + s*sin(random(random[0],random[1]));
+    posicion.x = nuevaX;
+    posicion.y = nuevaY;
   }
   
   void update() {
     
-    movimientoRandomGauss();
+    //movimientoRandomGauss();
+    
+    float theta[] = {0,2*PI};
+    movimientoAlternativo(10, theta);
     
     if(posicion.x < 0){
       posicion.x = width;

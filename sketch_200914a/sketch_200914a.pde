@@ -1,6 +1,7 @@
 float PE = 0.1; //Probabilidad de que un individuo este enfermo
 int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
+int radius= 6;
 //se inicia una nueva poblacion
 Poblacion p;
 
@@ -102,17 +103,19 @@ public class Individuo{
 //clase para individuo enfermo
 public class Enfermo extends Individuo{
   void display(){
+    ellipseMode(RADIUS);
     stroke(#ff0000);
     fill(#ff0000);
-    ellipse(posicion.x, posicion.y, 8, 8);
+    ellipse(posicion.x, posicion.y, radius, radius);
   }
 }
 
 //clase para individuo sano
 public class Sano extends Individuo{
   void display(){
+    ellipseMode(RADIUS);
     stroke(#00ff00);
     fill(#00ff00);
-    ellipse(posicion.x, posicion.y, 8, 8);
+    ellipse(posicion.x, posicion.y, radius, radius);
   }
 }

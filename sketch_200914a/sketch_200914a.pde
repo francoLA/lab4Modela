@@ -1,9 +1,6 @@
 float PE = 0.1; //Probabilidad de que un individuo este enfermo
 int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
-float velocidadMin = -2; //limites de velocidad
-float velocidadMax = 2;
-
 //se inicia una nueva poblacion
 Poblacion p;
 
@@ -20,6 +17,10 @@ void draw() {
   p.run();
 }
 
+
+
+
+/////////////////DEFINICION DE CLASES//////////////////////////
 
 
 //clase de la poblacion
@@ -49,8 +50,6 @@ public class Poblacion{
   }
 }
 
-
-
 //super clase individuo
 public class Individuo{
   PVector posicion;
@@ -62,7 +61,7 @@ public class Individuo{
     //no se usa la aceleracion
     aceleracion = new PVector(0, 0);
     //se obtiene una velocidad inicial random
-    velocidad = new PVector(random(velocidadMin, velocidadMax), random(velocidadMin, velocidadMax));
+    velocidad = PVector.random2D();
     //se obtiene la posicion en el terreno de forma random
     posicion = new PVector(random(0, 1023), random(0, 1023));
   }
@@ -74,31 +73,15 @@ public class Individuo{
    display();
   }
   
-  //movimiento Randon Gaussiano
-  void movimientoRandomGauss(){
-    float nuevaX = posicion.x + (randomGaussian() * 1.5);
-    float nuevaY = posicion.y + (randomGaussian() * 1.5);
-    posicion.x = nuevaX;
-    posicion.y = nuevaY;
-  }
-  
-  //s es el largo del paso
-  void movimientoAlternativo(Integer s, float[] theta){
-    float nuevaX = posicion.x + s*cos(random(theta[0],theta[1]));
-    float nuevaY = posicion.y + s*sin(random(theta[0],theta[1]));
-    posicion.x = nuevaX;
-    posicion.y = nuevaY;
+  //movimiento uniforme
+  void movimiento(){
+    posicion.add(velocidad);
   }
   
   //metodo para actualizar la posicion del inividuo
   void update() {
     
-    //movimiento en base al randomGaussiano, comentar la linea de abajo para usar el otro
-    movimientoRandomGauss();
-    
-    //moviemiento alternativo, descomentar las siguientes dos lineas para usar
-    //float theta[] = {0,2*PI};
-    //movimientoAlternativo(5, theta);
+    movimiento();
     
     //se hace que el terreno sea circular
     if(posicion.x < 0){

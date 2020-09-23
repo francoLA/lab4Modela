@@ -2,7 +2,10 @@ float PE = 0.1; //Probabilidad de que un individuo este enfermo
 int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
 float radius= 8.0;
-int maxTiempoEnfermo = 50;
+int maxTiempoEnfermo = 500;
+float minDistance = 2*radius;
+float socialDistancing = 1.5*minDistance;
+float pTransmission = 0.7;
 //se inicia una nueva poblacion
 Poblacion p;
 
@@ -16,10 +19,8 @@ void setup() {
 void draw() {
   background(0);
   //llamado a la funcion run de la poblacion
-  p.run();
+  p.run(p.personas);
 }
-
-
 
 
 /////////////////DEFINICION DE CLASES//////////////////////////
@@ -27,11 +28,13 @@ void draw() {
 
 //clase de la poblacion
 public class Poblacion{
-  ArrayList<Individuo> personas; //se crea un arreglo de individuos
-  
+  public ArrayList<Individuo> personas; //se crea un arreglo de individuos
   //constructor
   Poblacion(){
     personas = new ArrayList<Individuo>(); //se inicializa el arreglo
+  }
+  public ArrayList<Individuo> getPersonas(){
+    return this.personas;
   }
   //metodo para agregar personas al arreglo
   void agregarPersona(){
@@ -42,14 +45,15 @@ public class Poblacion{
     personas.add(individuo);
   }
   //metodo run en el cual se llena la poblacion con la cantidad de personas deseada 
-  void run(){
+  void run(ArrayList<Individuo> personas){
     for(int i = 0; i < cantidadPersonas; i++){
       agregarPersona();
       Individuo ind = personas.get(i); //se inicia el movimiento de cada individuo nuevo
-      ind.run();
+      ind.run(personas);
     }
   }
 }
+
 
 //super clase individuo (conext del patron de diseno state)
 public class Individuo{
@@ -79,14 +83,28 @@ public class Individuo{
     this.estado.colorFigura();
   }
   
+  void contagiar(Individuo otroIndividuo){
+    if(estado instanceof Enfermo){
+      // Get distances between the balls components
+      PVector distancia = PVector.sub(otroIndividuo.posicion, posicion);
+      // Calculate magnitude of the vector separating the balls
+      float magnitudDistancia = distancia.mag();
+      if(magnitudDistancia <= minDistance){
+        if(random(0,1) <= pTransmission){
+          otroIndividuo.setEstado(new Enfermo());
+        }
+      }
+    }
+  }
+  
   void display(){
     colorFigura();
     ellipse(posicion.x, posicion.y, radius, radius);
   }
   
   //metodo para incial el movimiento del individuo y actualizarlo
-  void run(){
-   update();
+  void run(ArrayList<Individuo> personas){
+   update(personas);
    display();
   }
   
@@ -107,24 +125,31 @@ public class Individuo{
   }
   
   //metodo para actualizar la posicion del inividuo
-  void update() {
+  void update(ArrayList<Individuo> personas) {
     movimiento();
+    //Nuevos recuperados
     if(estado instanceof Enfermo){
       if(frameCount - estado.tiempoEnfermo >= maxTiempoEnfermo){
         this.setEstado(new Recuperado());
       }
     }
+    //Nuevos contagiados
+    for(Individuo persona : personas){
+      if(persona.estado instanceof Sano){
+        contagiar(persona);
+      }
+    }
   }
 }
 
-//state del patron de disno stateu
+//state del patron de diseno state
 public abstract class EstadoIndividuo{
   int tiempoEnfermo;
   public abstract void colorFigura();
 }
 
 
-//clases que heredan de individuo:
+//clases que heredan de EstadoIndividuo
 
 //clase para individuo enfermo (concreteState)
 public class Enfermo extends EstadoIndividuo{

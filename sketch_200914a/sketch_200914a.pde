@@ -1,7 +1,8 @@
 float PE = 0.1; //Probabilidad de que un individuo este enfermo
 int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
-int radius= 6;
+float radius= 8.0;
+int maxTiempoEnfermo = 50;
 //se inicia una nueva poblacion
 Poblacion p;
 
@@ -34,12 +35,11 @@ public class Poblacion{
   }
   //metodo para agregar personas al arreglo
   void agregarPersona(){
+    Individuo individuo = new  Individuo();
     if(random(0,1) <= PE){ //bajo la probabilidad establecida se crea un individuo sano o enfermo
-      personas.add(new  Enfermo());
+      individuo.setEstado(new Enfermo());
     }
-    else{
-      personas.add(new  Sano());
-    }
+    personas.add(individuo);
   }
   //metodo run en el cual se llena la poblacion con la cantidad de personas deseada 
   void run(){
@@ -51,8 +51,9 @@ public class Poblacion{
   }
 }
 
-//super clase individuo
+//super clase individuo (conext del patron de diseno state)
 public class Individuo{
+  private EstadoIndividuo estado; // Patron de diseno state
   PVector posicion;
   PVector velocidad;
   PVector aceleracion;
@@ -65,8 +66,23 @@ public class Individuo{
     velocidad = PVector.random2D();
     //se obtiene la posicion en el terreno de forma random
     posicion = new PVector(random(0, 1023), random(0, 1023));
+    this.estado = new Sano();
   }
-  void display(){};
+  
+  //Patron de diseno state
+  public void setEstado(EstadoIndividuo estado){
+    this.estado = estado;
+  }
+  
+  //Patron de diseno state
+  public void colorFigura(){
+    this.estado.colorFigura();
+  }
+  
+  void display(){
+    colorFigura();
+    ellipse(posicion.x, posicion.y, radius, radius);
+  }
   
   //metodo para incial el movimiento del individuo y actualizarlo
   void run(){
@@ -77,13 +93,6 @@ public class Individuo{
   //movimiento uniforme
   void movimiento(){
     posicion.add(velocidad);
-  }
-  
-  //metodo para actualizar la posicion del inividuo
-  void update() {
-    
-    movimiento();
-    
     //se hace que el terreno sea circular
     if(posicion.x < 0){
       posicion.x = width;
@@ -96,26 +105,51 @@ public class Individuo{
       posicion.y = 0;
     }
   }
-}
-
-//clases que heredan de individuo:
-
-//clase para individuo enfermo
-public class Enfermo extends Individuo{
-  void display(){
-    ellipseMode(RADIUS);
-    stroke(#ff0000);
-    fill(#ff0000);
-    ellipse(posicion.x, posicion.y, radius, radius);
+  
+  //metodo para actualizar la posicion del inividuo
+  void update() {
+    movimiento();
+    if(estado instanceof Enfermo){
+      if(frameCount - estado.tiempoEnfermo >= maxTiempoEnfermo){
+        this.setEstado(new Recuperado());
+      }
+    }
   }
 }
 
-//clase para individuo sano
-public class Sano extends Individuo{
-  void display(){
+//state del patron de disno stateu
+public abstract class EstadoIndividuo{
+  int tiempoEnfermo;
+  public abstract void colorFigura();
+}
+
+
+//clases que heredan de individuo:
+
+//clase para individuo enfermo (concreteState)
+public class Enfermo extends EstadoIndividuo{
+  int tiempoEnfermo = frameCount;
+  void colorFigura(){
+    ellipseMode(RADIUS);
+    stroke(#ff0000);
+    fill(#ff0000);
+  }
+}
+
+//clase para individuo sano (concreteState)
+public class Sano extends EstadoIndividuo{
+  void colorFigura(){
     ellipseMode(RADIUS);
     stroke(#00ff00);
     fill(#00ff00);
-    ellipse(posicion.x, posicion.y, radius, radius);
+  }
+}
+
+//clase para individuo recuperado (concreteState)
+public class Recuperado extends EstadoIndividuo{
+  void colorFigura(){
+    ellipseMode(RADIUS);
+    stroke(#0000ff);
+    fill(#0000ff);
   }
 }

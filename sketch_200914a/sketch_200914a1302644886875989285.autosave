@@ -1,13 +1,11 @@
 float PE = 0.1; //Probabilidad de que un individuo este enfermo
-int cantidadPersonas = 50; //cantidad de personas
+int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
-
 float radius= 8.0;
 int maxTiempoEnfermo = 500;
 float minDistance = 2*radius;
 float socialDistancing = 1.5*minDistance;
 float pTransmission = 0.7;
-
 //se inicia una nueva poblacion
 Poblacion p;
 
@@ -15,17 +13,13 @@ Poblacion p;
 void setup() {
   size(1024, 1024);
   p = new Poblacion();
-  p.run();
 }
 
 //metodo para dibujar
 void draw() {
   background(0);
   //llamado a la funcion run de la poblacion
-  for(Individuo persona : p.personas){
-    persona.update(p.personas);
-    persona.display();
-  }
+  p.run();
 }
 
 
@@ -54,6 +48,8 @@ public class Poblacion{
   void run(){
     for(int i = 0; i < cantidadPersonas; i++){
       agregarPersona();
+      Individuo ind = personas.get(i); //se inicia el movimiento de cada individuo nuevo
+      ind.run(personas);
     }
   }
 }
@@ -103,7 +99,7 @@ public class Individuo{
   
   void display(){
     colorFigura();
-    circle(posicion.x, posicion.y, radius);
+    ellipse(posicion.x, posicion.y, radius, radius);
   }
   
   //metodo para inciar el movimiento del individuo y actualizarlo

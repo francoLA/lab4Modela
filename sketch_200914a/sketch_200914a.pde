@@ -19,7 +19,7 @@ void setup() {
 void draw() {
   background(0);
   //llamado a la funcion run de la poblacion
-  p.run(p.personas);
+  p.run();
 }
 
 
@@ -45,7 +45,7 @@ public class Poblacion{
     personas.add(individuo);
   }
   //metodo run en el cual se llena la poblacion con la cantidad de personas deseada 
-  void run(ArrayList<Individuo> personas){
+  void run(){
     for(int i = 0; i < cantidadPersonas; i++){
       agregarPersona();
       Individuo ind = personas.get(i); //se inicia el movimiento de cada individuo nuevo
@@ -84,7 +84,7 @@ public class Individuo{
   }
   
   void contagiar(Individuo otroIndividuo){
-    if(estado instanceof Enfermo){
+    if(otroIndividuo.estado instanceof Sano){
       // Get distances between the balls components
       PVector distancia = PVector.sub(otroIndividuo.posicion, posicion);
       // Calculate magnitude of the vector separating the balls
@@ -102,7 +102,7 @@ public class Individuo{
     ellipse(posicion.x, posicion.y, radius, radius);
   }
   
-  //metodo para incial el movimiento del individuo y actualizarlo
+  //metodo para inciar el movimiento del individuo y actualizarlo
   void run(ArrayList<Individuo> personas){
    update(personas);
    display();
@@ -134,8 +134,8 @@ public class Individuo{
       }
     }
     //Nuevos contagiados
-    for(Individuo persona : personas){
-      if(persona.estado instanceof Sano){
+    if(estado instanceof Enfermo){
+      for(Individuo persona : personas){
         contagiar(persona);
       }
     }

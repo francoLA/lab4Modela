@@ -1,12 +1,14 @@
-float PE = 0.1; //Probabilidad de que un individuo este enfermo
+//VariablesGlobales
 int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
 
 float radius= 8.0;
-int maxTiempoEnfermo = 500;
+float vel = 2.0;
 float minDistance = 2*radius;
 float socialDistancing = 1.5*minDistance;
 float pTransmission = 0.7;
+float pEnfermos = 0.1;
+int maxTiempoEnfermo = 500;
 
 //se inicia una nueva poblacion
 Poblacion p;
@@ -45,7 +47,7 @@ public class Poblacion{
   //metodo para agregar personas al arreglo
   void agregarPersona(){
     Individuo individuo = new  Individuo();
-    if(random(0,1) <= PE){ //bajo la probabilidad establecida se crea un individuo sano o enfermo
+    if(random(0,1) <= pEnfermos){ //bajo la probabilidad establecida se crea un individuo sano o enfermo
       individuo.setEstado(new Enfermo());
     }
     personas.add(individuo);
@@ -72,6 +74,8 @@ public class Individuo{
     aceleracion = new PVector(0, 0);
     //se obtiene una velocidad inicial random
     velocidad = PVector.random2D();
+    velocidad.x *= vel;
+    velocidad.y *= vel;
     //se obtiene la posicion en el terreno de forma random
     posicion = new PVector(random(0, 1023), random(0, 1023));
     this.estado = new Sano();

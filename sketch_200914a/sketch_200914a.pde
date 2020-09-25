@@ -96,6 +96,7 @@ public class Individuo{
       if(magnitudDistancia <= minDistance){
         if(random(0,1) <= pTransmission){
           otroIndividuo.setEstado(new Enfermo());
+          
         }
       }
     }
@@ -132,8 +133,9 @@ public class Individuo{
   void update(ArrayList<Individuo> personas) {
     movimiento();
     //Nuevos recuperados
-    if(estado instanceof Enfermo){
-      if(frameCount - estado.tiempoEnfermo >= maxTiempoEnfermo){
+    if(this.estado instanceof Enfermo){
+      println(estado.tiempoEnfermo);
+      if(frameCount - this.estado.tiempoEnfermo >= maxTiempoEnfermo){
         this.setEstado(new Recuperado());
       }
     }
@@ -157,7 +159,12 @@ public abstract class EstadoIndividuo{
 
 //clase para individuo enfermo (concreteState)
 public class Enfermo extends EstadoIndividuo{
-  int tiempoEnfermo = frameCount;
+  Enfermo(){
+    this.tiempoEnfermo = frameCount;
+  }
+  void getTiempoEnfermo(){
+    println(tiempoEnfermo);
+  }
   void colorFigura(){
     ellipseMode(RADIUS);
     stroke(#ff0000);

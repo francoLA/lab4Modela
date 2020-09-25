@@ -1,15 +1,19 @@
 //Variables globales
 int cantidadPersonas = 300; //cantidad de personas
 int tamano = 1024; //tamaño del terreno
+float reduccionPTransmisionA = 0.001; //Efecto de enfermo con mascarilla (de 0 a 1, a menor valor mas reduccion)
+float reduccionPTransmisionB = 0.1; //Efecto de sano con mascarilla (de 0 a 1,a menor valor mas reduccion)
 
 float radius= 8.0;
 float vel = 2.0;
 float minDistance = 2*radius;
-float socialDistancing = 1.5*minDistance;
-float pInHouse = 0.2;
-float pTransmission = 0.7;
-float pEnfermos = 0.3;
+float socialDistancing = 1.0*minDistance;
+float pInHouse = 0.1;
+float pTransmission = 0.9;
+float pEnfermos = 0.4;
+float pMaskOn = 0.6;
 int maxTiempoEnfermo = 500;
+
 
 //se inicia una nueva poblacion
 Poblacion p;
@@ -56,6 +60,9 @@ public class Poblacion{
       individuo.velocidad = new PVector(0, 0);
       individuo.aceleracion = new PVector(0, 0);
     }
+    if(random(0,1) <= pMaskOn){
+      individuo.maskOn = true;
+    }
     personas.add(individuo);
   }
   //metodo run en el cual se llena la poblacion con la cantidad de personas deseada 
@@ -75,6 +82,7 @@ public class Individuo{
   PVector aceleracion;
   float m = radius*.1;
   boolean inHouse;
+  boolean maskOn;
   
   //constructor
   Individuo(){
@@ -86,6 +94,8 @@ public class Individuo{
     velocidad = PVector.random2D();
     velocidad.x *= vel;
     velocidad.y *= vel;
+    inHouse = false;
+    maskOn = false;
     this.estado = new Sano();
   }
   
@@ -106,9 +116,15 @@ public class Individuo{
       // Calculate magnitude of the vector separating the balls
       float magnitudDistancia = distancia.mag();
       if(magnitudDistancia <= minDistance){
-        if(random(0,1) <= pTransmission){
-          otroIndividuo.setEstado(new Enfermo());
-          
+        float transmision = pTransmission;
+        if(this.maskOn){
+          transmision *= reduccionPTransmisionA;
+        }
+        if(otroIndividuo.maskOn){
+          transmision *= reduccionPTransmisionB;
+        }
+        if(random(0,1) <= transmision){
+          otroIndividuo.setEstado(new Enfermo());  
         }
       }
     }
@@ -117,6 +133,11 @@ public class Individuo{
   void display(){
     colorFigura();
     ellipse(posicion.x, posicion.y, radius, radius);
+    if(maskOn){
+      fill(#ffffff);
+      stroke(#ffffff);
+      rect(posicion.x-radius, posicion.y-radius*0.5, 2*radius, radius);
+    }
   }
   
   //metodo para inciar el movimiento del individuo y actualizarlo

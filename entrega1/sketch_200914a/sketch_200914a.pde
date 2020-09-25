@@ -6,8 +6,8 @@ float radius= 8.0;
 float vel = 2.0;
 float minDistance = 2*radius;
 float socialDistancing = 1.5*minDistance;
-float pTransmission = 0.7;
-float pEnfermos = 0.1;
+float pTransmission = 0.5;
+float pEnfermos = 0.3;
 int maxTiempoEnfermo = 500;
 
 //se inicia una nueva poblacion
